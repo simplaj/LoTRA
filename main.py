@@ -1,4 +1,7 @@
+import os
+import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def time_delay_embedding(x, m, t):
@@ -48,3 +51,18 @@ def calculate_Tij(D):
         for j in range(1, n-1):
             T[i-1, j-1] = cal_8bit(D, i, j)
     return T
+
+
+def process(x, t, m, im_save_path):
+    save_dir = os.path.dirname(im_save_path)
+    os.makedirs(save_dir, exist_ok=True)
+    V = time_delay_embedding(x, t, m)
+    D = calculate_Dij(V)
+    T = calculate_Tij(D)
+    heatmap = cv2.applyColorMap(np.uint8(T), cv2.COLORMAP_JET)
+    cv2.imwrite(im_save_path, heatmap)
+
+
+if __name__ == '__main__':
+    x = np.cos(np.linspace(0,10*np.pi,200))
+    process(x, 2, 100, './img/cos.jpg')
